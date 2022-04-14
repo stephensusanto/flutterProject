@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:quizzler/question.dart';
+import 'package:quizzler/quiz_brain.dart';
 
+QuizBrain quizBrain = QuizBrain();
 void main() => runApp(Quizzler());
 
 class Quizzler extends StatelessWidget {
@@ -32,10 +35,29 @@ Icon keluarIcon({IconData icon, Color colors}) {
 }
 
 class _QuizPageState extends State<QuizPage> {
-  List<Icon> scoreKeeper = [
-    keluarIcon(icon: Icons.check, colors: Colors.green),
-    keluarIcon(icon: Icons.check, colors: Colors.green)
+  /*
+question1: 'You can lead a cow down stairs but not up stairs.', false,
+question2: 'Approximately one quarter of human bones are in the feet.', true,
+question3: 'A slug\'s blood is green.', true,
+*/
+  List<Icon> scoreKeeper = [];
+  List<String> questions = [
+    'You can lead a cow down stairs but not up stairs.',
+    'Approximately one quarter of human bones are in the feet.',
+    'A slug\'s blood is green.'
   ];
+  List<bool> questionAnswer = [false, true, true];
+  void checkAnswer(bool answer) {
+    if (quizBrain.getQuestionAnswer() == answer) {
+      scoreKeeper.add(keluarIcon(icon: Icons.check, colors: Colors.green));
+
+      quizBrain.nextQuestion(context);
+    } else {
+      scoreKeeper.add(keluarIcon(icon: Icons.close, colors: Colors.red));
+      quizBrain.nextQuestion(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -48,7 +70,8 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                'This is where the question text will go.',
+                //Question
+                quizBrain.getQuestionText(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -73,8 +96,9 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 //The user picked true.
-                scoreKeeper
-                    .add(keluarIcon(icon: Icons.check, colors: Colors.green));
+                setState(() {
+                  checkAnswer(true);
+                });
               },
             ),
           ),
@@ -93,8 +117,10 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 //The user picked false.
-                scoreKeeper
-                    .add(keluarIcon(icon: Icons.close, colors: Colors.red));
+
+                setState(() {
+                  checkAnswer(false);
+                });
               },
             ),
           ),
@@ -107,9 +133,3 @@ class _QuizPageState extends State<QuizPage> {
     );
   }
 }
-
-/*
-question1: 'You can lead a cow down stairs but not up stairs.', false,
-question2: 'Approximately one quarter of human bones are in the feet.', true,
-question3: 'A slug\'s blood is green.', true,
-*/
